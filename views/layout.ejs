@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <h1><a href="/">Members Only Club</a></h1>
+        <nav>
+            <% if (currentUser) { %>
+                <a href="/messages/new">Create a new message</a>
+                <% if (!currentUser.membershipStatus) { %>
+                    <a href="/auth/join">Join the Club</a>
+                <% } %>
+                <span>Logged in as <%= currentUser.username %></span>
+                <a href="/auth/logout">Logout</a>
+            <% } else { %>
+                <a href="/auth/signup">Sign Up</a>
+                <a href="/auth/login">Login</a>
+            <% } %>
+        </nav>
+    </header>
+
+    <main>
+        <% if (success.length > 0) { %>
+            <div class="alert alert-success"><%= success[0] %></div>
+        <% } %>
+        <% if (errors.length > 0) { %>
+            <div class="alert alert-error"><%= errors[0] %></div>
+        <% } %>
+        <% if (validation_errors && validation_errors.length > 0) { %>
+            <div class="alert alert-error">Validation Errors:
+                <ul>
+                    <% validation_errors.forEach(err => { %>
+                        <li><%= err.msg %></li>
+                    <% }); %>
+                </ul>
+            </div>
+        <% } %>
+
+        <%- include(content) %>
+    </main>
+</body>
+</html>

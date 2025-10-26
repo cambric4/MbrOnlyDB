@@ -1,0 +1,11 @@
+<%- include('_header', { title: 'Join the Club' }) %>
+
+    <h2>Join the Club</h2>
+    <p>Enter the secret passcode to gain full membership access and see all author details!</p>
+    <form method="POST" action="/auth/join">
+        <label for="passcode">Secret Passcode:</label>
+        <input type="text" id="passcode" name="passcode" required>
+        <button type="submit">Join</button>
+    </form>
+
+<%- include('_footer') %>

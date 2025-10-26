@@ -3,8 +3,9 @@
 import dotenv from 'dotenv';
 import path from 'path';
 
-// Load .env first
 dotenv.config({ path: path.resolve('./.env') });
+
+import dbPool from './config/db.js';
 
 import express from 'express';
 import session from 'express-session';
@@ -12,7 +13,7 @@ import passport from 'passport';
 import flash from 'connect-flash';
 
 import configurePassport from './config/passport.js';
-import { syncDb } from './models/index.js';
+import { syncDb } from './models/index.js'; // This likely relies on Sequelize/ORM setup
 
 import indexRouter from './routes/index.js';
 import authRouter from './routes/auth.js';
@@ -62,7 +63,22 @@ app.use((err, req, res, next) => {
 const port = process.env.PORT || 3000;
 
 async function start() {
+  // 2. Perform a connection test before starting the server
+  try {
+    const client = await dbPool.connect();
+    console.log('PostgreSQL connection successful!');
+    client.release();
+  } catch (err) {
+    // If connection fails, log the specific ECONNREFUSED error and stop
+    console.error('Failed to connect to PostgreSQL. Is the server running?');
+    console.error(err);
+    // Exit the process so the application doesn't start without a DB
+    process.exit(1);
+  }
+
+  // If connection is good, proceed to sync models and start server
   await syncDb({ force: false }); // sync models (set force: true to wipe DB on start)
+  
   app.listen(port, () => {
     console.log(`App listening on http://localhost:${port}`);
   });
